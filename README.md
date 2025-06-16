@@ -39,6 +39,7 @@ neulix_datahub/
 ├── neulix_interface/ # Streamlit dashboards
 ├── nginx/            # Nginx reverse proxy config
 ├── docker-compose.yml
+```
 
 🚀 Getting Started
 bash
