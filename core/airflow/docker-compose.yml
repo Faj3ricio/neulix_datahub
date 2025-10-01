@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: neulix
+      POSTGRES_PASSWORD: neulix
+      POSTGRES_DB: neulix_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - neulix_net
+
+  selenium:
+    image: selenium/standalone-firefox:latest
+    ports:
+      - "4444:4444"
+    networks:
+      - neulix_net
+
+  airflow:
+    image: apache/airflow:2.8.1
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://neulix:neulix@postgres/neulix_db
+      AIRFLOW__CORE__FERNET_KEY: "$(openssl rand -base64 32)"
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+    depends_on:
+      - postgres
+    volumes:
+      - ./core:/opt/airflow/dags
+    ports:
+      - "8080:8080"
+    networks:
+      - neulix_net
+
+  streamlit:
+    build: ./neulix_interface
+    depends_on:
+      - postgres
+    ports:
+      - "8501:8501"
+    networks:
+      - neulix_net
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - streamlit
+      - airflow
+    networks:
+      - neulix_net
+
+networks:
+  neulix_net:
+    driver: bridge
+
+volumes:
+  pgdata:
