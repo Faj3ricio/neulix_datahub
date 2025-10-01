@@ -1,0 +1,11 @@
+# Comentei a linha de constraints - teste sem ela primeiro
+# --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-main/constraints-3.7.txt"
+
+# Providers principais
+apache-airflow-providers-google
+apache-airflow-providers-apache-beam==6.0.3
+apache-airflow-providers-celery==3.8.5
+
+# Lib adicionais
+google.oauth
+google-cloud-firestore

@@ -1,66 +1,81 @@
 # Neulix DataHub 🕸️
 
-**Neulix DataHub** is a modular data collection and visualization platform built to run on a Raspberry Pi.  
-It orchestrates web scrapers (spiders) through Airflow, stores cleaned data in Postgres, and provides real-time dashboards using Streamlit — all within Docker.
+**Neulix DataHub** é uma plataforma modular para automação, coleta e visualização de dados, totalmente orquestrada via Airflow e Docker. Permite criar crawlers genéricos (scrapers e automações) facilmente extensíveis para qualquer site, com integração direta ao PostgreSQL e dashboards em tempo real via Streamlit.
 
 ---
 
-### 📌 Key Features
+### 📌 Principais Funcionalidades
 
-- Automated scraping pipelines (e.g., LinkedIn, Facebook)
-- Modular ETL design (spiders, transformers, loaders)
-- Real-time KPI dashboards (Streamlit)
-- Accessible via public web interface (Nginx reverse proxy)
-- Lightweight enough to run on Raspberry Pi 4
-- Exposable with HTTPS using DDNS and Let’s Encrypt
-
----
-
-### 🧱 Tech Stack
-
-| Layer         | Tool                     |
-|---------------|--------------------------|
-| Orchestration | Apache Airflow           |
-| Scraping      | BeautifulSoup + requests |
-| ETL           | pandas, SQLAlchemy       |
-| Storage       | PostgreSQL               |
-| Visualization | Streamlit                |
-| Proxy         | Nginx + Let’s Encrypt    |
-| Container     | Docker + docker-compose  |
+- Pipelines de scraping e automação totalmente automatizadas (ex: LinkedIn, Wikipedia)
+- Arquitetura modular e extensível (spiders, transformers, loaders)
+- Dashboards em tempo real (Streamlit)
+- Interface web pública (Nginx reverse proxy)
+- Pronto para rodar em Raspberry Pi ou servidores
+- HTTPS via DDNS e Let’s Encrypt
 
 ---
 
-### 🗂 Directory Overview
+### 🧱 Stack Tecnológica
+
+| Camada         | Ferramenta                       |
+|---------------|-----------------------------------|
+| Orquestração  | Apache Airflow                    |
+| Scraping      | Selenium (Firefox), BeautifulSoup |
+| ETL           | pandas, SQLAlchemy                |
+| Storage       | PostgreSQL                        |
+| Visualização  | Streamlit                         |
+| Proxy         | Nginx + Let’s Encrypt             |
+| Container     | Docker + docker-compose           |
+
+---
+
+### 🗂 Estrutura de Diretórios
 
 ```bash
 neulix_datahub/
-├── core/             # Airflow DAGs and helper scripts
+├── core/             # DAGs do Airflow
 ├── neulix_dataflow/  # Spiders, Transformers, Loaders
-├── neulix_interface/ # Streamlit dashboards
-├── nginx/            # Nginx reverse proxy config
+│   └── spiders/      # Spiders genéricos (Selenium)
+├── neulix_interface/ # Dashboards Streamlit
+├── nginx/            # Configuração do Nginx
 ├── docker-compose.yml
+├── .env.example      # Variáveis de ambiente
 ```
 
-🚀 Getting Started
-bash
-Copiar
-Editar
+---
+
+### 🚀 Como Rodar
+
+```bash
 git clone https://github.com/seu-usuario/neulix_datahub.git
 cd neulix_datahub
 cp .env.example .env
 docker-compose up --build -d
+```
 
-Then access:
-http://localhost/airflow – DAG management
-http://localhost/dashboard – Streamlit dashboards
+Acesse:
+- http://localhost/airflow – Gerenciamento de DAGs
+- http://localhost/dashboard – Dashboards Streamlit
 
-🔐 Exposing to the Web
-Use DuckDNS for free domain
+---
 
-Enable HTTPS with Let’s Encrypt via Certbot
+### 🕸️ Exemplo de Spiders
 
-Configure Nginx for /airflow and /dashboard reverse proxy
+* 
 
-👨‍💻 Dev Notes
-All spiders are in neulix_dataflow/spiders/, each one can be triggered by a DAG.
-Dashboards are built on demand from the Postgres DB.
+Todos os spiders herdam de `BaseSpider`, que utiliza Selenium (Firefox) para automação e scraping. Novos spiders podem ser criados facilmente herdando essa base.
+
+---
+
+### 🔄 Orquestração
+
+- Cada spider sao executados por um DAG do Airflow (exemplos em `core/`).
+- Resultados sao salvos no PostgreSQL e consumidos pelo Streamlit.
+
+---
+
+### 👨‍💻 Notas de Dev
+
+- Spiders ficam em `neulix_dataflow/spiders/`, cada um pode ser disparado por um DAG.
+- Dashboards são construídos sob demanda a partir do banco PostgreSQL.
+- Arquitetura modular: fácil adicionar novos spiders, transformadores e loaders.
